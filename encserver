@@ -84,11 +84,11 @@ int main(int argc, char *argv[]){
 
    // Receive plaintext size from client
   char clientelcharsizestr[4];
-  memset(clientelcharsizestr, '\0', 4);
+  memset(clientelcharsizestr, '\0',4);
   /*
   This is where wee are connecting directly to the client through the recv function thats recieving something through the socket that is being sent.
   */
-  charsRead = recv(connectionSocket, clientelcharsizestr, 3, 0);
+  charsRead = recv(connectionSocket,clientelcharsizestr, sizeof(clientelcharsizestr)-1, 0);
   /*
   check to see if you actually got something from the client.
   */
@@ -109,21 +109,25 @@ if (clientelsize == 0 && clientelcharsizestr[0] != '0'){
 /*
 allocating of memory for the plaintext and using a pointer to point where it will staart from.
 */
-char *plaintext = malloc(clientelsize + 1);
+char *plaintext = malloc(clientelsize + 2);
 if (plaintext == NULL){
   error("error allocating memory for plaintext");
 }
-memset(plaintext, '\0', clientelsize + 1);
+
+memset(plaintext, '\0', clientelsize + 2);
 int totalcharsread =0;
 while(totalcharsread < clientelsize){
-charsRead = recv(connectionSocket, plaintext, clientelsize, 0);
+charsRead = recv(connectionSocket, plaintext+totalcharsread , clientelsize - totalcharsread , 0);
+//printf("SERVER Chara : %s\n", plaintext);
 if (charsRead < 0){
   error("Error reading from socket");
 }
 totalcharsread += charsRead;
 }
+//fflush(stdout);
+printf("SERVER: I received plaintext of size: %lu\n", strlen(plaintext));
 printf("SERVER: I received this from the client: \"%s\"\n", plaintext);
-
+//fflush(stdout);
 char keysizestr[4];
 memset(keysizestr, '\0', 4);
 charsRead = recv(connectionSocket, keysizestr, 3,0);
@@ -132,6 +136,7 @@ if (charsRead < 0){
   error("Error reading from socket");
 }
 // if u found it do urself a favor and conver it to an integer.This will help in knowing how many number of keys to expect.
+//printf("Server recieved keysizestr: \"%s\"\n", keysizestr);
 int keysize = atoi(keysizestr);
 if (keysize ==0 && keysizestr[0] != '0'){
   error("Error converting integer");
@@ -143,66 +148,19 @@ if (actualkeys == NULL){
   error("error allocating memory for the keys ");
 }
 memset(actualkeys, '\0', keysize + 1);
-charsRead = recv(connectionSocket, actualkeys,keysize,0);
+totalcharsread = 0;
+while (totalcharsread < keysize){
+charsRead = recv(connectionSocket, actualkeys + totalcharsread,keysize - totalcharsread,0);
 // checki if any keys were recieved from our connection.
 if (charsRead < 0){
   error("Error reading information from the socket");
 }
+totalcharsread += charsRead;
+}
 printf("SERVER I RECIEVED THIS FROM THE CLIENT: \"%s\"\n", actualkeys);
+
 free(plaintext);
 free(actualkeys);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // Receive key size from client
-// char keySizeStr[4];
-// memset(keySizeStr, '\0', 4);
-// charsRead = recv(connectionSocket, keySizeStr, 3, 0); 
-// if (charsRead < 0){
-//   error("ERROR reading from socket");
-// }
-
-// // Convert key size to integer
-// int keySize = atoi(keySizeStr);
-// if (keySize == 0 && keySizeStr[0] != '0'){
-//   error("Error converting integer");
-// }
-
-// // Allocate memory for the key
-// char *key = malloc(keySize + 1);
-// if (key == NULL){
-//   error("Error allocating memory for key");
-// }
-
-// // Receive the key from the client
-// memset(key, '\0', keySize + 1);
-// charsRead = recv(connectionSocket, key, keySize, 0); 
-// if (charsRead < 0){
-//   error("ERROR reading from socket");
-// }
-
-// printf("SERVER: I received this key from the client: \"%s\"\n", key);
-
-// // Don't forget to free the memory when you're done with it
-// free(plaintext);
-// free(key);
-
-
-
-
     // Send a Success message back to the client
     charsRead = send(connectionSocket, 
                     "I am the server, and I got your message", 39, 0); 
@@ -216,4 +174,3 @@ free(actualkeys);
   close(listenSocket); 
   return 0;
 }
-

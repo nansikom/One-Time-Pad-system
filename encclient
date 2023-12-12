@@ -68,8 +68,14 @@ int main(int argc, char *argv[]) {
   if (connect(socketFD, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0){
     error("CLIENT: ERROR connecting");
   }
+/*Handshake initiation of processes*/
+  char function = 'E';
+  int charWritten = send(socketFD, &function, 1,0);
+  if (charsWritten < 0){
+      error("Clinet writing on the socket");
+    }
   // Get input message from user
-  printf("CLIENT: Enter text to send to the server, and then hit enter: ");
+  //printf("CLIENT: Enter text to send to the server, and then hit enter: ");
 
 FILE *keycontents=fopen(argv[2], "r");
 if (keycontents == NULL){
@@ -97,8 +103,8 @@ sprintf(plaintextSizestr, "%03d", plaintextsize);
  fseek(keycontents, 0L, SEEK_END);
  int keysize = ftell(keycontents);
  fseek(keycontents, 0L, SEEK_SET);
- char keySizestr[10];
- sprintf(keySizestr, "%d", keysize);
+ char keySizestr[6];
+ sprintf(keySizestr, "%05d", keysize);
 
 
 
@@ -133,13 +139,13 @@ if (strlen(realkey) < strlen(plaintextchars)){
       fprintf(stderr,"char is too short.\n");
       exit(1);
     }
-  printf("Clinet sending plain text chars: \"%s\"\n", plaintextSizestr);
+  //printf("Clinet sending plain text chars: \"%s\"\n", plaintextSizestr);
   int lengthsent=0;
   while(lengthsent < strlen(plaintextSizestr)){
   charsWritten = send(socketFD, plaintextSizestr + lengthsent, strlen(plaintextSizestr)-lengthsent, 0); 
    //charsWrittens= send(socketFD, realkey, strlen(realkey), 0); 
   if (charsWritten < 0){
-    error("CLIENT: ERROR writing to socket");
+    printf("CLIENT: ERROR writing to socket");
   }
   lengthsent += charsWritten;
 }
@@ -150,11 +156,11 @@ if (strlen(realkey) < strlen(plaintextchars)){
 
 
  int TotalSent = 0;
- printf("Client sending plain text  chars: \"%s\"\n", plaintextchars);
+ //printf("Client sending plain text  chars: \"%s\"\n", plaintextchars);
 while(TotalSent < plaintextsize){
   charsWritten = send(socketFD,plaintextchars +TotalSent,plaintextsize- TotalSent,0);
   if (charsWritten < 0){
-    error("CLIENT: Error writing to socket");
+    printf("CLIENT: Error writing to socket");
   }
   TotalSent += charsWritten;
 }
@@ -185,15 +191,16 @@ while(totalSent < keysize){
 if (totalSent < keysize){
   printf("CLIENT: WARNING: Not all data writtent to the socket!\n"); 
 } 
-
+//printf("Client keys sent: \"%s\"\n", realkey);
 fclose(plaintext);
 fclose(keycontents);
 
-  char ciphertext[256];
+  char ciphertext[1024];
   charsRead = recv(socketFD, ciphertext,  sizeof(ciphertext), 0); 
   if (charsRead < 0){
     error("CLIENT: ERROR reading from socket");
   }
+  ciphertext[charsRead] = '\0';
   printf("%s\n", ciphertext);
 
   // Close the socket

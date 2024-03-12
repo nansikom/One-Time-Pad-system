@@ -48,8 +48,7 @@ void setupAddressStruct(struct sockaddr_in* address,
 int main(int argc, char *argv[]) {
   int socketFD, portNumber, charsWritten, charsRead;
   struct sockaddr_in serverAddress;
-  //char buffer[256];
-  // Check usage & args
+ 
   if (argc < 3) { 
     fprintf(stderr,"USAGE: %s hostname port\n", argv[0]); 
     exit(0); 
@@ -74,9 +73,7 @@ int main(int argc, char *argv[]) {
   if (charsWritten < 0){
       error("Clinet writing on the socket");
     }
-  // Get input message from user
-  //printf("CLIENT: Enter text to send to the server, and then hit enter: ");
-
+  
 FILE *keycontents=fopen(argv[2], "r");
 if (keycontents == NULL){
 perror( "Error opening key file\n");
@@ -88,9 +85,7 @@ if (plaintext == NULL){
 perror("Error opening plain textfile\n");
 return(1);
 }
-//fseek(plaintext, 0L, SEEK_END);
-// int plaintextsize = ftell(plaintext);
-///fseek(plaintext, 0L, SEEK_SET);
+
 /*Generally used to reead the file contents from the end to the start since u need the size of the file 
 and the u have to start from the beginning using seek_set otherwise no shit is read
 */
@@ -113,13 +108,6 @@ sprintf(plaintextSizestr, "%03d", plaintextsize);
   char plaintextchars[1024];
   char realkey[1024];
   char plaitextlength[256];
-  // sprintf(plaitextlength,"%d" , strlen(plaintextchars));
-  // plaintextsize =strlen(plaintextchars);
-  
-  // char realkeylength[256];
-  // sprintf(realkeylength,"%d" , strlen(realkey));
-// try and read the contents from plaintext and read them into the string buffers  so that it is kept and transfered there.
-// reading of strings from files and placing them in buffer arrays.
   fgets(plaintextchars, sizeof(plaintextchars), plaintext);
   fgets(realkey, sizeof(realkey), keycontents);
   realkey[sizeof(realkey)-1] = '\0';
@@ -156,7 +144,6 @@ if (strlen(realkey) < strlen(plaintextchars)){
 
 
  int TotalSent = 0;
- //printf("Client sending plain text  chars: \"%s\"\n", plaintextchars);
 while(TotalSent < plaintextsize){
   charsWritten = send(socketFD,plaintextchars +TotalSent,plaintextsize- TotalSent,0);
   if (charsWritten < 0){

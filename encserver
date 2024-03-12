@@ -70,10 +70,6 @@ char *encrypt(char *plaintext, char *key, int connectionSocket){
    int i =0;
  
     
-    // Create different cases for the fork  to handle different situation when the fork is released
-    // Case -1 is when the fork actually fails.
-    
-    // Case 0 is when the fork is actually successful and the child process is created.  
    
     int length = strlen(plaintext);
     char *result = malloc(length + 1);
@@ -102,7 +98,7 @@ int main(int argc, char *argv[]){
   struct sockaddr_in serverAddress, clientAddress;
   socklen_t sizeOfClientInfo = sizeof(clientAddress);
 
-  // Check usage & args
+  
   if (argc < 2) { 
     fprintf(stderr,"USAGE: %s port\n", argv[0]); 
     exit(1);
@@ -124,10 +120,7 @@ int main(int argc, char *argv[]){
     error("ERROR on binding");
   }
 
-  // Start listening for connetions. Allow up to 5 connections to queue up
-  listen(listenSocket, 5); 
-  
-  // Accept a connection, blocking if one is not available until one connects
+
   while(1){
     // Accept the connection request which creates a connection socket
     connectionSocket = accept(listenSocket, 
@@ -249,7 +242,6 @@ int main(int argc, char *argv[]){
 
     
   }
-  // Close the listening socket
   close(listenSocket); 
   return 0;
 }

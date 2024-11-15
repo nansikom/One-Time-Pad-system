@@ -8,7 +8,7 @@ Client-Server Communication: Design and implement networked applications using s
 Encryption Techniques: Apply one-time pad encryption/decryption using modular arithmetic.
 Network Programming: Utilize the Unix socket API for secure communication.
 Error Handling: Build robust programs capable of handling and reporting errors.
-Program Descriptions
+## Program Descriptions
 1. enc_server
 A daemon program that encrypts plaintext using a key.
 Accepts up to 5 simultaneous connections.
@@ -57,4 +57,4 @@ Copy code
 keygen <keylength> > <key_file>
 References
 Wikipedia: One-Time Pads
-Note:This assignment was hosted by Oregon State University
+## Note:This assignment was hosted by Oregon State University

@@ -55,6 +55,23 @@ Usage:
 bash
 Copy code
 keygen <keylength> > <key_file>
-References
+## References
 Wikipedia: One-Time Pads
+## Technology used
+C
+Mobaxterm
+Visual studio code
+
+## Steps to follow
+git clone <repository-url>
+cd <repository-name>
+gcc -o enc_server enc_server.c
+gcc -o enc_client enc_client.c
+gcc -o dec_server dec_server.c
+gcc -o dec_client dec_client.c
+gcc -o keygen keygen.c
+Run the script using:
+bash
+Copy code
+./compile.sh
 ## Note:This assignment was hosted by Oregon State University
